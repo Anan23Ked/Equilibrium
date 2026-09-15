@@ -1,0 +1,414 @@
+/* =========================================================
+   0) FONT & ROOT VARS
+   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+:root{
+  /* Typography */
+  --font-sans: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Pill bars (header/footer) */
+  --pill-gap: 16px;
+  --header-height: 88px;
+  --footer-height: 56px;
+
+  /* Safe padding below fixed bars */
+  --safe-top:    calc(var(--header-height) + var(--pill-gap));
+  --safe-bottom: calc(var(--footer-height) + var(--pill-gap));
+
+  /* Layout sizing */
+  --legend-col: 56px;      /* a bit wider to shift legend right */
+  --content-gap: 30px;      /* narrow gap between legend and maps */
+
+  /* Map & money presentation (smaller to avoid scroll) */
+  --map-height: 320px;     /* compact map height */
+  --map-maxw: 420px;       /* max width per map block */
+  --maps-gap: 3px;        /* gap between country maps */
+
+  --cash-height: 60px;     /* compact money lane */
+  --cash-note-w: 58px;     /* money PNG width */
+
+  /* Compact breathing room */
+  --compact-top-gap: 8px;  /* space from header pill to content */
+  --compact-btm-gap: 8px;  /* space from content to footer pill */
+
+  /* Legend vertical offset so its top lines up with map canvases
+     (approx. height of title + metric controls above maps) */
+  --legend-offset-top: 156px;
+  
+  --slider-track:  #f5f5f5;
+  --slider-fill:   rgba(195, 207, 109, 1); /* ← your color */
+  --slider-thumb:  rgba(195, 207, 109, 1); /* thumb matches fill */
+  --slider-focus:  rgba(255, 255, 255, 0);
+  --slider-height: 10px;
+  --slider-radius: 999px;
+
+}
+
+/* =========================================================
+   1) GLOBAL RESET & BASE
+   ========================================================= */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+html, body,
+button, input, select, textarea,
+.leaflet-container, .leaflet-tooltip, .leaflet-popup-content {
+  font-family: var(--font-sans) !important;
+}
+
+/* Dense layout under fixed header/footer pills */
+body.compact{
+  margin: 0px;
+  background: rgb(255, 255, 255);
+  padding-top:  calc(var(--safe-top) + var(--compact-top-gap));
+  padding-bottom: calc(var(--safe-bottom) + var(--compact-btm-gap));
+  color: #222;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   2) HEADER & FOOTER (PILL BARS)
+   ========================================================= */
+.pill-bar{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, calc(100vw - 64px));
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  background: #eff2dd;
+  box-shadow: 0 2px 12px rgba(0,0,0,.09);
+  z-index: 20;
+  border-radius: 999px;
+}
+
+.pill-bar.header{
+  top: var(--pill-gap);
+  height: var(--header-height);
+  border-radius: calc(var(--header-height)/2);
+}
+.pill-bar.footer{
+  bottom: var(--pill-gap);
+  height: var(--footer-height);
+  border-radius: calc(var(--footer-height)/2);
+}
+
+.pill-inner{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pill-inner .left, .pill-inner .right { width: 40px; }
+
+.pill-inner .center{
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.pill-inner .center .site-title{
+  margin: 0;
+  line-height: 1.15;
+  font-weight: 600;
+}
+.pill-inner .center .site-nav{
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pill-inner .center .site-nav a{
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #969696;
+  text-decoration: none;
+}
+.pill-inner .center .site-nav a:hover{ text-decoration: underline; }
+
+/* Footer center: title + links row */
+.pill-bar.footer .center{ display: flex; flex-direction: column; gap: 2px; }
+.footer-title{ font-weight: 600; }
+.footer-links{ display: flex; align-items: center; gap: 6px; }
+.footer-links a{ text-decoration: none; color: #aeaeae; font-weight: 500; }
+.footer-links a:hover{ text-decoration: underline; }
+.footer-links .divider{ opacity: .45; user-select: none; }
+
+/* Helper if you ever disable .compact on <body> */
+.page-safe{ padding-top: var(--safe-top); padding-bottom: var(--safe-bottom); }
+
+/* =========================================================
+   3) TITLE, METRIC CONTROLS, TIMELINE
+   ========================================================= */
+.maps-header{
+  display: grid;
+  gap: 8px;                 /* tight */
+  margin: 0 0 8px 0;        /* small gap before maps */
+}
+
+.page-title{
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;                /* no tall margins */
+}
+
+.controls{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;                /* tight above maps */
+  flex-wrap: wrap;
+}
+.controls label{
+  font-weight: 600;
+  font-size: 16px;
+  color: #2a2a2a;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.controls select#metricSel{
+  appearance: none; -webkit-appearance: none; -moz-appearance: none;
+  font-size: 18px; line-height: 1.2;
+  padding: 11px 40px 11px 14px;
+  min-width: 260px; height: 46px;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  color: #222;
+  transition: box-shadow .2s, border-color .2s;
+}
+.controls select#metricSel:hover{ box-shadow: 0 4px 12px rgba(0,0,0,.08); }
+.controls select#metricSel:focus{
+  outline: none;
+  border-color: #b9c86a;
+  box-shadow: 0 0 0 3px rgba(185,200,106,.25);
+}
+
+/* Timeline (year slider) — snug under money stacks */
+.timeline{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding-top: 0;
+  margin: 38px 0 6px;  /* tight */
+}
+.timeline__label{ font-size: 14px; color: #444; }
+
+.timeline__range{
+  -webkit-appearance: none;
+  appearance: none;
+  width: min(70vw, 900px);
+  height: var(--slider-height);
+  border-radius: var(--slider-radius);
+  background: var(--slider-track);
+  outline: none;
+}
+.timeline__range::-webkit-slider-runnable-track{
+  height: var(--slider-height);
+  background: transparent;
+  border-radius: var(--slider-radius);
+}
+.timeline__range::-webkit-slider-thumb{
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.08);
+  margin-top: calc((var(--slider-height) - 18px)/2);
+  cursor: pointer;
+}
+.timeline__range::-moz-range-track{
+  height: var(--slider-height);
+  background: var(--slider-track);
+  border-radius: var(--slider-radius);
+}
+.timeline__range::-moz-range-progress{
+  height: var(--slider-height);
+  background: var(--slider-fill);
+  border-radius: var(--slider-radius);
+}
+.timeline__range::-moz-range-thumb{
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--slider-thumb);
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.08);
+  cursor: pointer;
+}
+.timeline__range:focus{ box-shadow: 0 0 0 4px var(--slider-focus); }
+
+/* Optional attribution */
+.author{
+  text-align: center;
+  font-size: 12px;
+  color: #666;
+  margin: 6px 0 0 0;
+}
+
+/* =========================================================
+   4) LAYOUT: LEGEND + MAPS
+   ========================================================= */
+.layout{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--content-gap);
+  align-items: start; /* start so we can offset legend to map top */
+  min-height: calc(100vh - 160px);
+}
+
+/* horizontal legend above maps */
+.legend-top{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;        /* snug above the maps */
+}
+
+#legendBarH{
+  width: min(72vw, 1200px);
+  height: 12px;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,.12);
+}
+
+.legendTicksH{
+  width: min(72vw, 1200px);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+}
+
+
+/* =========================================================
+   5) MAPS & MONEY
+   ========================================================= */
+.maps-row{
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  gap: 4px !important;
+  margin-top: 6px;          /* tiny nudge below controls */
+  margin-bottom: 8px;       /* tiny nudge above timeline */
+}
+
+/* Three maps in a row, close together */
+.maps-inline{
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--maps-gap);
+  flex-wrap: wrap;
+}
+.map-block{
+  flex: 1 1 320px;
+  max-width: var(--map-maxw);
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.map-title{ font-size: 18px; font-weight: 600; color: #333; text-align: center; }
+
+/* Map canvas: white background */
+.map.big{
+  width: 100%;
+  height: var(--map-height);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Money stacks — lower and compact */
+.cash-row{
+  display: flex;
+  width: 90%;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  padding: 0 2px;
+  margin-top: 10px;         /* LOWER (no pull-up) */
+}
+.cash{
+  position: relative;
+  width: 100px;
+  height: var(--cash-height);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+}
+.cash-stack{ position: relative; width: 90%; height: 100%; }
+.cash-note{
+  position: absolute;
+  top: 0;
+  width: var(--cash-note-w);
+  pointer-events: none;
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+/* Leaflet chrome minimization */
+.leaflet-control-container{ display: none; }
+.leaflet-container path{ vector-effect: non-scaling-stroke; }
+
+/* =========================================================
+   6) RESPONSIVE TWEAKS
+   ========================================================= */
+@media (max-width: 1280px){
+  .map.big{ height: 240px; }
+  #legendBar, #legendTicks { height: 240px; }
+  .pill-bar{ width: calc(100vw - 24px); padding: 0 20px; }
+  .pill-inner .left, .pill-inner .right { width: 28px; }
+  .pill-inner .center .site-nav{ gap: 12px; }
+}
+
+@media (max-width: 1024px){
+  :root{
+    --legend-offset-top: 140px;
+  }
+  .layout{ grid-template-columns: 60px 1fr; }
+  .map.big{ height: 230px; }
+  #legendBar, #legendTicks { height: 230px; }
+  .pill-bar{ width: calc(100vw - 24px); padding: 0 20px; }
+}
+
+@media (max-width: 820px){
+  .maps-inline{ gap: 16px; }
+  .map-block{ flex: 1 1 300px; max-width: 360px; }
+  .map.big{ height: 220px; }
+  #legendBar, #legendTicks { height: 220px; }
+  .cash-row{ justify-content: space-around; padding: 0 8px; }
+}
+
+@media (max-width: 640px){
+  :root{
+    --legend-offset-top: 120px;
+  }
+  .layout{ grid-template-columns: 48px 1fr; }
+  .maps-inline{ gap: 14px; }
+  .map-block{ flex: 1 1 100%; max-width: 100%; }
+  .map.big{ height: 210px; }
+  #legendBar, #legendTicks { height: 210px; }
+  .cash-row{ gap: 12px; }
+  .cash{ width: 100px; height: 60px; }
+
+  .controls{ gap: 8px; }
+  .controls select#metricSel{ min-width: 220px; height: 44px; font-size: 17px; }
+  .controls label{ font-size: 15px; }
+  .pill-bar{ width: calc(100vw - 24px); padding: 0 20px; }
+}
+

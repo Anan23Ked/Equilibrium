@@ -1,0 +1,273 @@
+/* =========================================
+   FONTS & RESET
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+body {
+  font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #333333;
+  background: #f7f9fb;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================
+   LAYOUT VARS
+   ========================================= */
+:root{
+  --content-pad: 180px;        /* horizontal padding for title/info/linkGroup */
+  --pill-gap: 16px;           /* distance of pills from viewport edge */
+  --header-height: 88px;      /* header pill height */
+  --footer-height: 56px;      /* footer pill height */
+  --title-offset: 80px; 
+  --safe-top:    calc(var(--header-height) + var(--pill-gap));
+  --safe-bottom: calc(var(--footer-height) + var(--pill-gap));
+  
+  --content-width: min(1180px, calc(100vw - 64px));
+  --title-shift: 160px;
+}
+
+/* =========================================
+   CANVAS (background)
+   ========================================= */
+#c {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0; /* behind all UI */
+}
+
+/* =========================================
+   OVERLAYS (title, info list, bottom links)
+   ========================================= */
+#title, #currentInfo, #linkGroup {
+  position: absolute;
+  z-index: 9; /* under pill bars, above canvas */
+}
+
+
+/* Title (single line; sits below header, with page padding) */
+#title{
+
+  top: calc(var(--safe-top) + 5.5*var(--title-offset));
+  color: #333333;  
+  /* center a frame the same width as the pill bars */
+  left: calc(67% + var(--title-shift));
+  transform: translateX(-50%);
+  width: var(--content-width);
+
+  /* keep your side padding inside that frame */
+  padding: 0 var(--content-pad);
+
+  /* same text feel as before */
+  display: inline-block;
+  inline-size: min(62ch, 100%);
+  min-inline-size: 34ch; 
+  margin: 0;
+  max-width: 180ch;
+  text-align: right;
+
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  font-size: clamp(12px, 2.6vw, 18px);
+  line-height: 1.2;
+  hyphens: none;
+}
+#title .accent{
+  color: #c0c0c0;           /* accent color */
+  font-weight: 600;
+}
+/* Typewriter caret */
+
+#title .tw-ch {
+  visibility: hidden;       
+  display: inline;    
+}
+#title .tw-word { white-space: nowrap; display:inline; }
+#title .tw-space { visibility:visible !important; display:inline;} 
+
+
+/* blinking caret */
+#title .caret {
+  display: inline-block;
+  margin-left: 4px;
+  animation: caret-blink 1s step-end infinite;
+}
+@keyframes caret-blink { 50% { opacity: 0; } }
+
+
+/* Info list (below title, aligned with padding) */
+#currentInfo {
+  top: calc(var(--safe-top) + 72px);
+  left: var(--content-pad);
+  width: min(720px, calc(100vw - 2 * var(--content-pad)));
+  background: transparent;
+  border-top: none;
+  padding: 16px 20px 0 20px;
+}
+
+/* Layer list items (built by JS) */
+#list { list-style: disc; margin-left: 24px; padding-left: 0; }
+#list .year {
+  list-style: disc;
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(0,0,0,0.38);
+  cursor: pointer;
+  transition: color .15s ease, font-size .1s ease;
+}
+#list .year:hover,
+#list .year.active { color:#111; font-size:23px; }
+
+/* Bottom link row (above footer, same page padding) */
+#linkGroup {
+  left: var(--content-pad);
+  right: var(--content-pad);
+  bottom: calc(var(--safe-bottom) + 8px);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+#linkGroup a {
+  color: #9aa0a6;
+  text-decoration: none;
+  transition: color .2s ease;
+  font-weight: 500;
+}
+#linkGroup a:hover { color: #ffd24d; text-decoration: none; }
+#linkGroup a.timeline { margin-left: auto; }
+#divider { width: 1px; height: 18px; background: #bdbdbd; }
+
+/* Global link fallback */
+a { color: #9aa0a6; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* =========================================
+   PILL HEADER & FOOTER
+   ========================================= */
+.pill-bar{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, calc(100vw - 64px));
+  padding: 0 28px;
+  display: flex;
+  align-items: center;     /* vertically centers contents */
+  background: #eff2dd;     /* light tone */
+  box-shadow: 0 2px 12px rgba(0,0,0,.09);
+  z-index: 20;
+}
+
+/* Header pill */
+.pill-bar.header{
+  top: var(--pill-gap);
+  height: var(--header-height);
+  border-radius: calc(var(--header-height) / 2);
+}
+
+/* Footer pill (shorter) */
+.pill-bar.footer{
+  bottom: var(--pill-gap);
+  height: var(--footer-height);
+  border-radius: calc(var(--footer-height) / 2);
+}
+
+.pill-inner{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pill-inner .left, .pill-inner .right { width: 40px; }
+/* Stack footer title over links, centered */
+.pill-bar.footer .center{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;                /* space between CASA 0017 and links */
+}
+
+/* Footer title style (optional) */
+.footer-title{
+  font-weight: 1000;
+}
+
+/* Inline, centered link row under the title */
+.footer-links{
+  display: flex;
+  align-items: center;
+  gap: 6px;               /* space around divider */
+}
+
+.footer-links a{
+  text-decoration: none;
+  color: #aeaeae;          /* match your theme */
+  font-weight: 500;
+}
+.footer-links a:hover{ text-decoration: underline; }
+
+.footer-links .divider{
+  opacity: 0.45;
+  user-select: none;
+}
+
+
+/* === Stack site title over nav INSIDE the pill header === */
+.pill-inner .center{
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;   /* <-- makes nav go under the title */
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.pill-inner .center .site-title{ margin: 0; line-height: 1.15; }
+.pill-inner .center .site-nav{
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.pill-inner .center .site-nav a{
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #969696;
+  text-decoration: none;
+}
+.pill-inner .center .site-nav a:hover{ text-decoration: underline; }
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+@media (max-width: 700px){
+  #title{
+    inline-size: calc(100% - 3 * var(--content-pad)); /* full width inside padding */
+    min-inline-size: 21ch;       /* still avoids 1–2 char lines */
+    text-align: center;          /* optional: looks nicer on phones */
+  }
+  
+  :root{
+    --content-pad: 16px;
+    --title-offset: 56px;
+    --title-shift: 0px;
+    --content-width: calc(100vw - 24px);
+    --safe-top:    calc(var(--header-height) + var(--pill-gap));
+    --safe-bottom: calc(var(--footer-height) + var(--pill-gap));
+  }
+  .pill-bar{ width: calc(100vw - 24px); padding: 0 20px; }
+  .pill-inner .left, .pill-inner .right { width: 28px; }
+  .pill-inner .center .site-nav{ gap: 12px; }
+}
+
+/* @media (max-width: 1200px){ :root{ --title-shift: 90px; } }
+@media (max-width: 900px) { :root{ --title-shift: 30px; } }
+@media (max-width: 760px) { :root{ --title-shift: 0px;  --content-pad: 24px; } } */
