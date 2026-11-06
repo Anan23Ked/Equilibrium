@@ -104,5 +104,5 @@ dist
 .tern-port
 
 #sqlite database
-website/server/db/eco_env.sqlite
+# (eco_env.sqlite is committed: Netlify needs it)
 

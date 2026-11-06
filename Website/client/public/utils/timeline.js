@@ -28,7 +28,7 @@
 };*/
 
 var COUNTRIES = ["Brazil", "Poland", "South Korea"];
-var WORLD_GEOJSON_URL = "./src/map.geojson";
+var WORLD_GEOJSON_URL = "/map.geojson";
 var GDP_MIN = Infinity;
 var GDP_MAX = -Infinity;
 
@@ -144,7 +144,7 @@ async function loadDATAFromAPI(){
 
 /* ===================== 2) Constants and helpers ===================== 
 var COUNTRIES = ["Brazil", "Poland", "South Korea"];
-var WORLD_GEOJSON_URL = "./src/map.geojson";
+var WORLD_GEOJSON_URL = "/map.geojson";
 var GDP_MIN = Infinity;
 var GDP_MAX = -Infinity; */
 
@@ -451,7 +451,7 @@ function updateCash(countryName, val01) {
     const col = i % CASH_PER_ROW;                  // 0..CASH_PER_ROW-1
 
     const img = document.createElement("img");
-    img.src = "./img/money.png";
+    img.src = "/img/money.png";
     img.className = "cash-note";
     // position: left-to-right, build upward
     img.style.left = (col * NOTE_SPACING_X) + "px";

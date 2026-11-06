@@ -1,42 +1,30 @@
-// SQL Connection Configuration
-/*import mysql from 'mysql2/promise';
-
-export const pool = mysql.createPool({
-  host:'localhost', 
-  user:'root', 
-  password:'password', 
-  database:'eco_env',
-  waitForConnections:true, 
-  connectionLimit:10,
-  namedPlaceholders:true
-});
-
-try {
-  const conn = await pool.getConnection();
-  console.log("✅ database connect successfully！");
-  conn.release();
-} catch (err) {
-  console.error("❌ database connect failed：", err.message);
-}*/
-
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
+import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// __dirname setup //
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const here = path.dirname(fileURLToPath(import.meta.url));
+// Local: next to this file. Netlify: included_files keeps the repo-relative path under cwd / LAMBDA_TASK_ROOT.
+const candidates = [
+  path.resolve(here, "eco_env.sqlite"),
+  path.resolve(process.cwd(), "server/db/eco_env.sqlite"),
+  path.resolve(process.env.LAMBDA_TASK_ROOT || "", "server/db/eco_env.sqlite"),
+  path.resolve(process.env.LAMBDA_TASK_ROOT || "", "Website/server/db/eco_env.sqlite"),
+];
 
-// SQLite connection //
-const dbPath = path.resolve(__dirname, "eco_env.sqlite");
+let dbPromise;
+function getDb() {
+  if (!dbPromise) {
+    const filename = candidates.find((p) => fs.existsSync(p));
+    if (!filename) throw new Error("eco_env.sqlite not found. Tried: " + candidates.join(", "));
+    dbPromise = open({ filename, driver: sqlite3.Database, mode: sqlite3.OPEN_READONLY });
+  }
+  return dbPromise;
+}
 
-console.log("🔗 SQLite path:", dbPath);
-
-export const db = await open({
-  filename: dbPath,
-  driver: sqlite3.Database,
-});
-console.log("✅ database connect successfully！");
-
-await db.exec("PRAGMA journal_mode = DELETE;");
+// Same interface the routes already use: db.all / db.get
+export const db = {
+  all: async (...a) => (await getDb()).all(...a),
+  get: async (...a) => (await getDb()).get(...a),
+};
