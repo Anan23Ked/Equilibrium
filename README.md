@@ -2,9 +2,6 @@
 
 # 🌍 Equilibrium — CASA0017 Web Assessment
 
-## Live Demo
-
-[🌍 View Equilibrium Data Visualization](https://equilibrium-dataviz.netlify.app/)
 
 [![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-latest-black?logo=three.js&logoColor=white)](https://threejs.org/)
@@ -17,10 +14,14 @@
 
 ---
 
-## ✨ Demo
+<!-- ## ✨ Demo
 
 > 🎥 **Watch the demo**  
-> https://github.com/user-attachments/assets/874ed74e-03c5-4d06-899f-7dd907c5bfd0
+> https://github.com/user-attachments/assets/874ed74e-03c5-4d06-899f-7dd907c5bfd0 -->
+
+## Live Demo
+
+[🌍 View Equilibrium Data Visualization](https://equilibrium-dataviz.netlify.app/)
 
 ---
 
