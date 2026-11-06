@@ -106,3 +106,6 @@ dist
 #sqlite database
 # (eco_env.sqlite is committed: Netlify needs it)
 
+
+# Local Netlify folder
+.netlify

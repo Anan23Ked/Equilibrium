@@ -2,12 +2,10 @@ import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-// Local: next to this file. Netlify: included_files keeps the repo-relative path under cwd / LAMBDA_TASK_ROOT.
+// NOTE: no import.meta.url here: Netlify bundles functions to CommonJS, where it is undefined.
+// cwd is Website/ for `npm start` and `netlify dev`; LAMBDA_TASK_ROOT is used when deployed.
 const candidates = [
-  path.resolve(here, "eco_env.sqlite"),
   path.resolve(process.cwd(), "server/db/eco_env.sqlite"),
   path.resolve(process.env.LAMBDA_TASK_ROOT || "", "server/db/eco_env.sqlite"),
   path.resolve(process.env.LAMBDA_TASK_ROOT || "", "Website/server/db/eco_env.sqlite"),
